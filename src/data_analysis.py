@@ -1,7 +1,7 @@
 import logging
 import os
 from typing import List
-
+import time
 import pandas as pd
 import subprocess
 import tempfile
@@ -26,7 +26,7 @@ class DataAnalysis:
 
             # Prepare mutmut
             exit_call = subprocess.call('. ' + self.virtual_environment_path + '/bin/activate ' + ' && cd ' + temporary_directory +
-                            ' && timeout 10 --signal=STOP python -m mutmut run', shell=True)
+                            ' && timeout 20 python -m mutmut run', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut run')
 
@@ -38,5 +38,11 @@ class DataAnalysis:
                 new_tests = pd.DataFrame(map(lambda execution: execution.__dict__, executions))
                 self.executions = self.executions.append(new_tests, ignore_index=True)
                 self.mutants = self.mutants.append(mutant.__dict__, ignore_index=True)
+
+    def store_data_to_disk(self, filename: str):
+        mutants_and_tests = self.mutants.set_index('mutant_id').join(self.executions.set_index('mutant_id'))
+        timestring = time.strftime("%Y%m%d-%H%M%S")
+        mutants_and_tests.to_pickle(timestring + '_' + filename + '.pkl')
+
 
 

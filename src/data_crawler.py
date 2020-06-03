@@ -17,8 +17,8 @@ class DataCrawler:
     def analyze_mutant(self, mutant_id: int) -> [Mutant, List[Execution]]:
         self.checkout_mutant(mutant_id)
         tests_json = self.execute_test(mutant_id)
-        return_value = [Mutant.from_repo(Repo(self.repository_path)),
-                        map(lambda test_json: Execution.fromJson(test_json), tests_json)
+        return_value = [Mutant.from_repo(Repo(self.repository_path), mutant_id),
+                        map(lambda test_json: Execution.fromJson(test_json, mutant_id), tests_json)
                         ]
         self.reset_folder()
         return return_value
@@ -36,7 +36,7 @@ class DataCrawler:
 
     def execute_test(self, mutant_id: int) -> json:
         logging.info('Executing tests for Mutant %i', mutant_id)
-        cmd_str = '. ' + self.virtual_environment + '/bin/activate && cd ' + self.repository_path + ' && pytest --json=report.json'
+        cmd_str = '. ' + self.virtual_environment + '/bin/activate && cd ' + self.repository_path + ' && pytest --json=report.json > /dev/null'
         subprocess.call(cmd_str, shell=True)
         with open(self.repository_path + '/report.json') as json_file:
             test_data = json.load(json_file)["report"]["tests"]

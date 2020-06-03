@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-import logging
 
 
 def textToBool(t: str):
-    if t == "failed" or t == "skipped" or t == "error":  # If not executed, we tread it as false
+    if t == "failed" or t == "skipped":  # If not executed, we tread it as false
         return False
     elif t == "passed":
         return True
@@ -23,6 +22,7 @@ class Execution:
     name: str = None
     filepath: str = None
     duration: float = None
+    mutant_id: int = None
 
     setup_outcome: bool = None
     setup_duration: float = None
@@ -34,9 +34,9 @@ class Execution:
     teardown_duration: float = None
 
     @classmethod
-    def fromJson(self, json):
-        logging.info('Converting new execution from json string: %s', json)
+    def fromJson(self, json, mutant_id):
         t = Execution()
+        t.mutant_id = mutant_id
         t.outcome = textToBool(json["outcome"])
         t.test_id = json["run_index"]
         t.full_name = json["name"]
