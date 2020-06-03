@@ -1,4 +1,3 @@
-import pytest
 import json
 
 from src.execution import Execution
@@ -6,7 +5,8 @@ from src.execution import Execution
 
 def test_parsing():
     json_test = json.loads(
-        '{"name": "tests/test_appctx.py::test_basic_url_generation", "duration": 1, "run_index": 0, "setup": {"name": "setup", "duration": 2, "outcome": "passed"}, "call": {"name": "call", "duration": 3, "outcome": "passed"}, "teardown": {"name": "teardown", "duration": 4, "outcome": "passed"}, "outcome": "passed"}'
+        '{"name": "tests/test_appctx.py::test_basic_url_generation", "duration": 1, "run_index": 0, "setup": {"name": "setup", "duration": 2, "outcome": "passed"}, " \
+        "call": {"name": "call", "duration": 3, "outcome": "passed"}, "teardown": {"name": "teardown", "duration": 4, "outcome": "passed"}, "outcome": "passed"}'
     )
     execution_reference = Execution(
         full_name="tests/test_appctx.py::test_basic_url_generation",
