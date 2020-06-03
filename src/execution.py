@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+import logging
 
 
 def textToBool(t: str):
-    if t == "failed" or t == "skipped":  # If not executed, we tread it as false
+    if t == "failed" or t == "skipped" or t == "error":  # If not executed, we tread it as false
         return False
     elif t == "passed":
         return True
@@ -34,6 +35,7 @@ class Execution:
 
     @classmethod
     def fromJson(self, json):
+        logging.info('Converting new execution from json string: %s', json)
         t = Execution()
         t.outcome = textToBool(json["outcome"])
         t.test_id = json["run_index"]
