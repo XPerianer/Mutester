@@ -25,13 +25,13 @@ class DataAnalysis:
             logging.info(os.listdir(temporary_directory))
 
             # Prepare mutmut
-            exit_call = subprocess.call('. ' + self.virtual_environment_path + '/bin/activate ' + ' && cd ' + temporary_directory +
+            exit_call = subprocess.call('. ' + self.virtual_environment_path + '/bin/activate ' + ' && cd ' + temporary_directory + ' && pip install -e .' +
                             ' && mutmut update-cache', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut run')
 
             logging.info(os.listdir(temporary_directory))
-            data_crawler = DataCrawler(temporary_directory, 'repos/flask/env/')
+            data_crawler = DataCrawler(temporary_directory, self.virtual_environment_path)
 
             for mutant_id in mutant_ids:
                 if data_crawler.checkout_mutant(mutant_id):

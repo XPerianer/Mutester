@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 def textToBool(t: str):
-    if t == "failed" or t == "skipped":  # If not executed, we tread it as false
+    if t == "failed" or t == "skipped" or t == "error":  # If not executed, we tread it as false
         return False
     elif t == "passed":
         return True
