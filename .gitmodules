@@ -1,0 +1,3 @@
+[submodule "submodules/mutmut"]
+	path = submodules/mutmut
+	url = git@github.com:XPerianer/mutmut.git

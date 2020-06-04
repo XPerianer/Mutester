@@ -11,7 +11,7 @@ mutants = pd.DataFrame(columns=Mutant.__annotations__)
 
 data_analysis = DataAnalysis('repos/flask', 'repos/flask/env')
 
-data_analysis.collect_data([1, 2, 3, 1234])
+data_analysis.collect_data([1, 2, 3, 1234, 2000])
 data_analysis.store_data_to_disk('joined_data')
 
 print(data_analysis.executions)
