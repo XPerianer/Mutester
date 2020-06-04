@@ -34,10 +34,13 @@ class DataAnalysis:
             data_crawler = DataCrawler(temporary_directory, 'repos/flask/env/')
 
             for mutant_id in mutant_ids:
-                [mutant, executions] = data_crawler.analyze_mutant(mutant_id)
-                new_tests = pd.DataFrame(map(lambda execution: execution.__dict__, executions))
-                self.executions = self.executions.append(new_tests, ignore_index=True)
-                self.mutants = self.mutants.append(mutant.__dict__, ignore_index=True)
+                if data_crawler.checkout_mutant(mutant_id):
+                    [mutant, executions] = data_crawler.analyze_mutant(mutant_id)
+                    new_tests = pd.DataFrame(map(lambda execution: execution.__dict__, executions))
+                    self.executions = self.executions.append(new_tests, ignore_index=True)
+                    self.mutants = self.mutants.append(mutant.__dict__, ignore_index=True)
+                else:
+                    logging.error('Skipping mutant %i due to checkout error', mutant_id)
 
     def store_data_to_disk(self, filename: str):
         mutants_and_tests = self.mutants.set_index('mutant_id').join(self.executions.set_index('mutant_id')).reset_index()
