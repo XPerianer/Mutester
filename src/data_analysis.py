@@ -6,9 +6,9 @@ import pandas as pd
 import subprocess
 import tempfile
 
-from src.data_crawler import DataCrawler
-from src.execution import Execution
-from src.mutant import Mutant
+from data_crawler import DataCrawler
+from execution import Execution
+from mutant import Mutant
 
 
 class DataAnalysis:
