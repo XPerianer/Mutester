@@ -25,7 +25,7 @@ argument_parser.add_argument('--filename', action='store', default='dataframe')
 argument_parser.add_argument('-v', '--verbose', action='store_true')
 
 args = argument_parser.parse_args()
-if args.v:
+if args.verbose:
     logging.basicConfig(level=logging.INFO)
 
 tests = pd.DataFrame(columns=Execution.__annotations__)
@@ -33,7 +33,7 @@ mutants = pd.DataFrame(columns=Mutant.__annotations__)
 
 data_analysis = DataAnalysis(args.repository_path, args.environment_path)
 
-data_analysis.collect_data(list(range(args.interval_start, args.interval_end)))
+data_analysis.collect_data(list(range(int(args.interval_start), int(args.interval_end))))
 data_analysis.store_data_to_disk(args.filename)
 
 total_tests = len(data_analysis.executions)

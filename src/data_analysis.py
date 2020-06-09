@@ -25,7 +25,7 @@ class DataAnalysis:
             logging.info(os.listdir(temporary_directory))
 
             # Prepare mutmut
-            exit_call = subprocess.call('. ' + self.virtual_environment_path + '/bin/activate ' + ' && cd ' + temporary_directory + ' && pip install -e .' +
+            exit_call = subprocess.call('. ' + self.virtual_environment_path + '/bin/activate ' + ' && cd ' + temporary_directory + ' && pip install pytest pytest-timeout pytest-json && pip install -e .' +
                             ' && mutmut update-cache', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut run')
