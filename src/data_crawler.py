@@ -33,12 +33,16 @@ class DataCrawler:
         return True
 
     def execute_test(self, mutant_id: int) -> json:
-        logging.info('Executing tests for Mutant %i', mutant_id)
-        cmd_str = '. ' + self.virtual_environment + '/bin/activate && cd ' + self.repository_path + ' && pytest -rN --timeout=60 --json=report.json'
-        subprocess.call(cmd_str, shell=True)
-        with open(self.repository_path + '/report.json') as json_file:
-            test_data = json.load(json_file)["report"]["tests"]
-            return test_data
+        try:
+            logging.info('Executing tests for Mutant %i', mutant_id)
+            cmd_str = '. ' + self.virtual_environment + '/bin/activate && cd ' + self.repository_path + ' && pytest -rN --timeout=60 --json=report.json'
+            subprocess.call(cmd_str, shell=True)
+            with open(self.repository_path + '/report.json') as json_file:
+                test_data = json.load(json_file)["report"]["tests"]
+                return test_data
+        except:
+            logging.error('Executing tests for Mutant %i failed', mutant_id)
+            return []
 
     def reset_folder(self):
         subprocess.call('cd ' + self.repository_path + ' && git checkout .' + ' && rm report.json', shell=True)
