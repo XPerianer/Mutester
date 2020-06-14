@@ -5,6 +5,7 @@ import time
 import pandas as pd
 import subprocess
 import tempfile
+import sys 
 
 from data_crawler import DataCrawler
 from execution import Execution
@@ -34,13 +35,20 @@ class DataAnalysis:
             data_crawler = DataCrawler(temporary_directory, self.virtual_environment_path)
 
             for mutant_id in mutant_ids:
-                if data_crawler.checkout_mutant(mutant_id):
-                    [mutant, executions] = data_crawler.analyze_mutant(mutant_id)
-                    new_tests = pd.DataFrame(map(lambda execution: execution.__dict__, executions))
-                    self.executions = self.executions.append(new_tests, ignore_index=True)
-                    self.mutants = self.mutants.append(mutant.__dict__, ignore_index=True)
-                else:
-                    logging.error('Skipping mutant %i due to checkout error', mutant_id)
+                try:
+                    if data_crawler.checkout_mutant(mutant_id):
+                        [mutant, executions] = data_crawler.analyze_mutant(mutant_id)
+                        new_tests = pd.DataFrame(map(lambda execution: execution.__dict__, executions))
+                        self.executions = self.executions.append(new_tests, ignore_index=True)
+                        self.mutants = self.mutants.append(mutant.__dict__, ignore_index=True)
+                    else:
+                        logging.error('Skipping mutant %i due to checkout error', mutant_id)
+                except KeyboardInterrupt:
+                    return
+                except:
+                    logging.error('Thrown error for mutant %i, resetting environment', mutant_id)
+                    subprocess.call('cd ' + temporary_directory + ' && git checkout .')
+                    logging.error(sys.exc_info()[0])
 
     def store_data_to_disk(self, filename: str):
         mutants_and_tests = self.mutants.set_index('mutant_id').join(self.executions.set_index('mutant_id')).reset_index()
