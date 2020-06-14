@@ -21,6 +21,9 @@ argument_parser.add_argument('interval_start',
                              help='Test to start with')
 argument_parser.add_argument('interval_end',
                              help='Test to end with (exlusive)')
+argument_parser.add_argument('-m', '--merge',
+                             help='Add a path to the pickle file, the end result should be merged with. Helpful if the process was aborted, and you want to run some tests again.',
+                             default='')
 argument_parser.add_argument('--filename', action='store', default='dataframe')
 argument_parser.add_argument('-v', '--verbose', action='store_true')
 
@@ -34,8 +37,5 @@ mutants = pd.DataFrame(columns=Mutant.__annotations__)
 data_analysis = DataAnalysis(args.repository_path, args.environment_path)
 
 data_analysis.collect_data(list(range(int(args.interval_start), int(args.interval_end))))
-data_analysis.store_data_to_disk(args.filename)
+data_analysis.store_data_to_disk(args.filename, args.merge)
 
-total_tests = len(data_analysis.executions)
-total_failed_tests = len(data_analysis.executions[data_analysis.executions["outcome"] == False])
-print('Total number of tests: {}\n Total failed number of tests: {}'.format(total_tests, total_failed_tests))

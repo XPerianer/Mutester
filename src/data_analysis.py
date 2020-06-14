@@ -49,11 +49,26 @@ class DataAnalysis:
                     logging.error('Thrown error for mutant %i, resetting environment', mutant_id)
                     subprocess.call('cd ' + temporary_directory + ' && git checkout .')
                     logging.error(sys.exc_info()[0])
+                    return True # Supress the error, as we want to keep our temporary directory
 
-    def store_data_to_disk(self, filename: str):
-        mutants_and_tests = self.mutants.set_index('mutant_id').join(self.executions.set_index('mutant_id')).reset_index()
+    def store_data_to_disk(self, filename: str, merge: str):
+        mutants_and_tests = pd.DataFrame()
+        if merge != '':
+            mutants_and_tests = pd.read_pickle(merge)
+            print('Read in {} executions to merge from {}'.format(len(mutants_and_tests), merge))
+        mutants_and_tests = mutants_and_tests.append(
+            self.mutants.set_index('mutant_id').join(self.executions.set_index('mutant_id')).reset_index(),
+            ignore_index=True,
+        )
         timestring = time.strftime("%Y%m%d-%H%M%S")
-        mutants_and_tests.to_pickle(timestring + '_' + filename + '.pkl')
+        pickle_name = timestring + '_' + filename + '.pkl'
+        mutants_and_tests.to_pickle(pickle_name)
+        print("Wrote: {}\n".format(pickle_name))
+        total_tests = len(mutants_and_tests)
+        print(mutants_and_tests)
+        total_failed_tests = len(mutants_and_tests[mutants_and_tests["outcome"] == False])
+        print('Total number of tests: {}\n Total failed number of tests: {}'.format(total_tests, total_failed_tests))
+        return pickle_name
 
 
 
