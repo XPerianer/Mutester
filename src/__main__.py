@@ -1,4 +1,5 @@
 import argparse
+import math
 from threading import Thread
 from typing import List
 
@@ -7,6 +8,7 @@ import pandas as pd
 import logging
 
 from data_analysis import DataAnalysis
+from data_crawler import DataCrawler
 from execution import Execution
 from mutant import Mutant
 
@@ -39,9 +41,19 @@ if args.verbose:
 tests = pd.DataFrame(columns=Execution.__annotations__)
 mutants = pd.DataFrame(columns=Mutant.__annotations__)
 
+timed_run_count = 3
+timed_crawler = DataCrawler(args.repository_path, args.environment_path)
+
+start_time = time.time()
+for _ in range(timed_run_count):
+    timed_crawler.execute_test(-1)
+test_baseline_time = math.ceil((time.time() - start_time) / timed_run_count)
+logging.info('Measured %i seconds of runtime\n Test with higher than 10 times the baseline will be killed', test_baseline_time)
+
+
 
 def analysis_thread(mutant_ids: List[int], results: List[DataAnalysis]):
-    data_analysis = DataAnalysis(args.repository_path, args.environment_path)
+    data_analysis = DataAnalysis(args.repository_path, args.environment_path, timeout=test_baseline_time * 10)
     data_analysis.collect_data(mutant_ids)
     results.append(data_analysis)
     # data_analysis.store_data_to_disk(args.filename, args.merge)

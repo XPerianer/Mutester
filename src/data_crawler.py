@@ -1,6 +1,7 @@
 import json
 import logging
 import subprocess
+import os
 from typing import List
 
 from git import Repo
@@ -10,9 +11,10 @@ from mutant import Mutant
 
 
 class DataCrawler:
-    def __init__(self, repository_path, virtual_environment):
-        self.repository_path = repository_path
-        self.virtual_environment = virtual_environment
+    def __init__(self, repository_path, virtual_environment, timeout=0):
+        self.repository_path = os.path.abspath(repository_path)
+        self.virtual_environment = os.path.abspath(virtual_environment)
+        self.timeout = timeout
 
     def analyze_mutant(self, mutant_id: int) -> [Mutant, List[Execution]]:
         tests_json = self.execute_test(mutant_id)
@@ -24,7 +26,7 @@ class DataCrawler:
 
     def checkout_mutant(self, mutant_id: int) -> bool:
         logging.info('Switching to Mutant %i', mutant_id)
-        cmd_str = 'cd ' + self.repository_path + '  && . venv/bin/activate && mutmut apply ' + str(mutant_id)
+        cmd_str = 'cd ' + self.virtual_environment  +' &&  . bin/activate && cd ' + self.repository_path + ' && mutmut apply ' + str(mutant_id)
         logging.info(cmd_str)
         return_value = subprocess.call(cmd_str, shell=True)
         subprocess.call('cd ' + self.repository_path + ' && git diff', shell=True)
@@ -36,13 +38,15 @@ class DataCrawler:
     def execute_test(self, mutant_id: int) -> json:
         try:
             logging.info('Executing tests for Mutant %i', mutant_id)
-            cmd_str = 'cd ' + self.repository_path + ' && . venv/bin/activate && cd ' + self.repository_path + ' && pytest -rN --timeout=60 --json=report.json > pytest_log.log'
-            subprocess.call(cmd_str, shell=True)
+            cmd_str = 'cd ' + self.virtual_environment + ' && . bin/activate && cd '\
+                      + self.repository_path + ' && pytest -rN --timeout=' + str(self.timeout) +' --json=report.json > pytest_log.log'
+            logging.info(cmd_str)
+            subprocess.call(cmd_str, timeout=100, shell=True)
             with open(self.repository_path + '/report.json') as json_file:
                 test_data = json.load(json_file)["report"]["tests"]
                 return test_data
         except:
-            logging.error('Executing tests for Mutant %i failed', mutant_id)
+            logging.error('Executing tests for Mutant %i failed\n It will not be used in the analysis', mutant_id)
             return []
 
     def reset_folder(self):

@@ -5,7 +5,7 @@ import time
 import pandas as pd
 import subprocess
 import tempfile
-import sys 
+import sys
 
 from data_crawler import DataCrawler
 from execution import Execution
@@ -13,27 +13,31 @@ from mutant import Mutant
 
 
 class DataAnalysis:
-    def __init__(self, base_repository_path: str, virtual_environment_path: str):
+    def __init__(self, base_repository_path: str, virtual_environment_path: str, timeout=0):
         self.base_repository_path = base_repository_path
         self.virtual_environment_path = virtual_environment_path
         self.executions = pd.DataFrame()
         self.mutants = pd.DataFrame()
+        self.timeout = timeout
 
     def collect_data(self, mutant_ids: List[int]):
         with tempfile.TemporaryDirectory() as temporary_directory:
             subprocess.call('cp ' + self.base_repository_path + '/. ' + temporary_directory + ' -r', shell=True)
-            subprocess.call('. ' + self.virtual_environment_path + 'bin/activate && virtualenv-clone ' + self.virtual_environment_path + ' ' + temporary_directory + '/venv/', shell=True)
+            subprocess.call(
+                '. ' + self.virtual_environment_path + 'bin/activate && virtualenv-clone ' + self.virtual_environment_path + ' ' + temporary_directory + '/venv/',
+                shell=True)
             logging.info('Temporary directory now contains:')
             logging.info(os.listdir(temporary_directory))
 
             # Prepare mutmut
-            exit_call = subprocess.call('cd ' + temporary_directory + ' && . venv/bin/activate && pip install pytest pytest-timeout pytest-json && pip install -e .' +
-                            ' && rm .mutmut-cache && mutmut update-cache', shell=True)
+            exit_call = subprocess.call(
+                'cd ' + temporary_directory + ' && . venv/bin/activate && pip install pytest pytest-timeout pytest-json && pip install -e .' +
+                ' && rm .mutmut-cache && mutmut update-cache', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut run')
 
             logging.info(os.listdir(temporary_directory))
-            data_crawler = DataCrawler(temporary_directory, self.virtual_environment_path)
+            data_crawler = DataCrawler(temporary_directory, temporary_directory + '/venv/', timeout= self.timeout)
 
             for mutant_id in mutant_ids:
                 try:
@@ -50,6 +54,4 @@ class DataAnalysis:
                     logging.error('Thrown error for mutant %i, resetting environment', mutant_id)
                     subprocess.call('cd ' + temporary_directory + ' && git checkout .')
                     logging.error(sys.exc_info()[0])
-                    return True # Supress the error, as we want to keep our temporary directory
-
-
+                    return True  # Supress the error, as we want to keep our temporary directory
