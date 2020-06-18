@@ -24,9 +24,10 @@ class DataCrawler:
 
     def checkout_mutant(self, mutant_id: int) -> bool:
         logging.info('Switching to Mutant %i', mutant_id)
-        cmd_str = '. ' + self.virtual_environment + '/bin/activate && cd ' + self.repository_path + ' && mutmut apply ' + str(mutant_id)
-        print(cmd_str)
+        cmd_str = 'cd ' + self.repository_path + '  && . venv/bin/activate && mutmut apply ' + str(mutant_id)
+        logging.info(cmd_str)
         return_value = subprocess.call(cmd_str, shell=True)
+        subprocess.call('cd ' + self.repository_path + ' && git diff', shell=True)
         if return_value != 0:
             logging.error('Nonzero exit code in checkout_mutant call')
             return False
@@ -35,7 +36,7 @@ class DataCrawler:
     def execute_test(self, mutant_id: int) -> json:
         try:
             logging.info('Executing tests for Mutant %i', mutant_id)
-            cmd_str = '. ' + self.virtual_environment + '/bin/activate && cd ' + self.repository_path + ' && pytest -rN --timeout=60 --json=report.json'
+            cmd_str = 'cd ' + self.repository_path + ' && . venv/bin/activate && cd ' + self.repository_path + ' && pytest -rN --timeout=60 --json=report.json > pytest_log.log'
             subprocess.call(cmd_str, shell=True)
             with open(self.repository_path + '/report.json') as json_file:
                 test_data = json.load(json_file)["report"]["tests"]

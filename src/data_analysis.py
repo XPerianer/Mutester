@@ -22,12 +22,13 @@ class DataAnalysis:
     def collect_data(self, mutant_ids: List[int]):
         with tempfile.TemporaryDirectory() as temporary_directory:
             subprocess.call('cp ' + self.base_repository_path + '/. ' + temporary_directory + ' -r', shell=True)
+            subprocess.call('. ' + self.virtual_environment_path + 'bin/activate && virtualenv-clone ' + self.virtual_environment_path + ' ' + temporary_directory + '/venv/', shell=True)
             logging.info('Temporary directory now contains:')
             logging.info(os.listdir(temporary_directory))
 
             # Prepare mutmut
-            exit_call = subprocess.call('. ' + self.virtual_environment_path + '/bin/activate ' + ' && cd ' + temporary_directory + ' && pip install pytest pytest-timeout pytest-json && pip install -e .' +
-                            ' && mutmut update-cache', shell=True)
+            exit_call = subprocess.call('cd ' + temporary_directory + ' && . venv/bin/activate && pip install pytest pytest-timeout pytest-json && pip install -e .' +
+                            ' && rm .mutmut-cache && mutmut update-cache', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut run')
 
@@ -50,25 +51,5 @@ class DataAnalysis:
                     subprocess.call('cd ' + temporary_directory + ' && git checkout .')
                     logging.error(sys.exc_info()[0])
                     return True # Supress the error, as we want to keep our temporary directory
-
-    def store_data_to_disk(self, filename: str, merge: str):
-        mutants_and_tests = pd.DataFrame()
-        if merge != '':
-            mutants_and_tests = pd.read_pickle(merge)
-            print('Read in {} executions to merge from {}'.format(len(mutants_and_tests), merge))
-        mutants_and_tests = mutants_and_tests.append(
-            self.mutants.set_index('mutant_id').join(self.executions.set_index('mutant_id')).reset_index(),
-            ignore_index=True,
-        )
-        timestring = time.strftime("%Y%m%d-%H%M%S")
-        pickle_name = timestring + '_' + filename + '.pkl'
-        mutants_and_tests.to_pickle(pickle_name)
-        print("Wrote: {}\n".format(pickle_name))
-        total_tests = len(mutants_and_tests)
-        print(mutants_and_tests)
-        total_failed_tests = len(mutants_and_tests[mutants_and_tests["outcome"] == False])
-        print('Total number of tests: {}\n Total failed number of tests: {}'.format(total_tests, total_failed_tests))
-        return pickle_name
-
 
 

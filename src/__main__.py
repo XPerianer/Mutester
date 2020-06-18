@@ -1,4 +1,8 @@
 import argparse
+from threading import Thread
+from typing import List
+
+import time
 import pandas as pd
 import logging
 
@@ -26,6 +30,7 @@ argument_parser.add_argument('-m', '--merge',
                              default='')
 argument_parser.add_argument('--filename', action='store', default='dataframe')
 argument_parser.add_argument('-v', '--verbose', action='store_true')
+argument_parser.add_argument('-j', '--thread_count', action='store', default=1)
 
 args = argument_parser.parse_args()
 if args.verbose:
@@ -34,8 +39,56 @@ if args.verbose:
 tests = pd.DataFrame(columns=Execution.__annotations__)
 mutants = pd.DataFrame(columns=Mutant.__annotations__)
 
-data_analysis = DataAnalysis(args.repository_path, args.environment_path)
 
-data_analysis.collect_data(list(range(int(args.interval_start), int(args.interval_end))))
-data_analysis.store_data_to_disk(args.filename, args.merge)
+def analysis_thread(mutant_ids: List[int], results: List[DataAnalysis]):
+    data_analysis = DataAnalysis(args.repository_path, args.environment_path)
+    data_analysis.collect_data(mutant_ids)
+    results.append(data_analysis)
+    # data_analysis.store_data_to_disk(args.filename, args.merge)
 
+
+def store_data_to_disk(filename: str, merge: str, datas: List[DataAnalysis]):
+    mutants_and_tests = pd.DataFrame()
+    if merge != '':
+        mutants_and_tests = pd.read_pickle(merge)
+        print('Read in {} executions to merge from {}'.format(len(mutants_and_tests), merge))
+    for data_analysis in datas:
+        mutants_and_tests = mutants_and_tests.append(
+            data_analysis.mutants.set_index('mutant_id').join(data_analysis.executions.set_index('mutant_id')).reset_index(),
+            ignore_index=True,
+        )
+
+    timestring = time.strftime("%Y%m%d-%H%M%S")
+    pickle_name = timestring + '_' + filename + '.pkl'
+    mutants_and_tests.to_pickle(pickle_name)
+    print("Wrote: {}\n".format(pickle_name))
+    total_tests = len(mutants_and_tests)
+    print(mutants_and_tests)
+    total_failed_tests = len(mutants_and_tests[mutants_and_tests["outcome"] == False])
+    print('Total number of tests: {}\n Total failed number of tests: {}'.format(total_tests, total_failed_tests))
+    return pickle_name
+
+
+thread_count = int(args.thread_count)
+threads = []
+interval_start = int(args.interval_start)
+interval_end = int(args.interval_end)
+interval_length = int((interval_end - interval_start) / thread_count)
+
+results = []
+
+for thread_number in range(thread_count - 1):
+    thread_interval_start = interval_start + thread_number * interval_length
+    mutant_ids = list(range(thread_interval_start, thread_interval_start + interval_length))
+    threads.append(Thread(target=analysis_thread, args=(mutant_ids, results)))
+
+threads.append(Thread(target=analysis_thread,
+                      args=((list(range(interval_start + (thread_count - 1) * interval_length, interval_end))), results)))
+
+for thread in threads:
+    thread.start()
+
+for thread in threads:
+    thread.join()
+
+store_data_to_disk(args.filename, args.merge, results)
