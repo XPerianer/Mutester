@@ -32,7 +32,7 @@ class DataAnalysis:
             # Prepare mutmut
             exit_call = subprocess.call(
                 'cd ' + temporary_directory + ' && . venv/bin/activate && pip install pytest pytest-timeout pytest-json && pip install -e .' +
-                ' && rm .mutmut-cache && mutmut update-cache', shell=True)
+                ' && mutmut update-cache', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut run')
 
