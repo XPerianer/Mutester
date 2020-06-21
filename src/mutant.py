@@ -10,11 +10,12 @@ class Mutant:
     line_number_changed: int = -1
     previous_line: str = ""
     current_line: str = ""
+    repo_path: str = ""
 
     @classmethod
     def from_repo(cls, repo: Repo, mutant_id: int = None):
         current_diff = repo.index.diff(None)
-        diff = repo.git.diff(repo.head, None)
+        diff = repo.git.diff(repo.head, None, '--unified=0')
         patchset = PatchSet(diff)
 
         modified_file_path = patchset[0].target_file[2:]  # Remove "b/" from the path
@@ -29,4 +30,4 @@ class Mutant:
         return Mutant(mutant_id=mutant_id, modified_file_path=modified_file_path,
                       line_number_changed=changed_sourcecode_line,
                       previous_line=previous_line,
-                      current_line=current_line)
+                      current_line=current_line, repo_path=repo.working_dir)
