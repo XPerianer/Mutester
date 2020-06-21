@@ -32,3 +32,7 @@ def test_location_to_def(mutant_fixture):
 def test_changed_line_number(mutant_fixture):
     semantic_analysis = SemanticMutantAnalysis(mutant_fixture)
     assert (semantic_analysis.changed_line_number == 24)
+
+def test_semantic_analysis(mutant_fixture):
+    semantic_analysis = SemanticMutantAnalysis(mutant_fixture)
+    assert (semantic_analysis.method_name() == "yet_another_help_function")

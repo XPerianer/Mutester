@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from git import Repo
 from unidiff import PatchSet
 
+from src.semantic_mutant_analysis import SemanticMutantAnalysis
+
 
 @dataclass
 class Mutant:
@@ -11,6 +13,7 @@ class Mutant:
     previous_line: str = ""
     current_line: str = ""
     repo_path: str = ""
+    modified_method: str = ""
 
     @classmethod
     def from_repo(cls, repo: Repo, mutant_id: int = None):
@@ -27,7 +30,9 @@ class Mutant:
             if line.is_removed:
                 current_line = str(line)[2:]
 
-        return Mutant(mutant_id=mutant_id, modified_file_path=modified_file_path,
+        mutant = Mutant(mutant_id=mutant_id, modified_file_path=modified_file_path,
                       line_number_changed=changed_sourcecode_line,
                       previous_line=previous_line,
                       current_line=current_line, repo_path=repo.working_dir)
+        mutant.modified_method = SemanticMutantAnalysis(mutant).method_name()
+        return mutant

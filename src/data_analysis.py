@@ -7,9 +7,7 @@ import subprocess
 import tempfile
 import sys
 
-from .data_crawler import DataCrawler
-from .execution import Execution
-from .mutant import Mutant
+from src.data_crawler import DataCrawler
 
 
 class DataAnalysis:

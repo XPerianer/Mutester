@@ -8,10 +8,9 @@ import intervaltree
 
 class SemanticMutantAnalysis:
 
-    def __init__(self, repo_path: str):
-        self.repo_path = repo_path
-        self.changed_file_name = repo_path + "/example_class.py"
-        self.changed_line_number = 15
+    def __init__(self, mutant: 'Mutant'):
+        self.changed_file_name = mutant.repo_path + '/' + mutant.modified_file_path
+        self.changed_line_number = mutant.line_number_changed
         self.tree = intervaltree.IntervalTree()
         self.file_to_tree()
 
@@ -36,3 +35,6 @@ class SemanticMutantAnalysis:
         matches = self.tree[line_number]
         if matches:
             return min(matches, key=lambda i: i.length()).data.name
+
+    def method_name(self):
+        return self.query_line_number(self.changed_line_number)
