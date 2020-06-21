@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import sys
 
-from src.data_crawler import DataCrawler
+from mutester.data_crawler import DataCrawler
 
 
 class DataAnalysis:

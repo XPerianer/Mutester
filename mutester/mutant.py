@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from git import Repo
 from unidiff import PatchSet
 
-from src.semantic_mutant_analysis import SemanticMutantAnalysis
+from mutester.semantic_mutant_analysis import SemanticMutantAnalysis
 
 
 @dataclass

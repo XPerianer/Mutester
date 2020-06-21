@@ -6,8 +6,8 @@ from typing import List
 
 from git import Repo
 
-from execution import Execution
-from mutant import Mutant
+from mutester.execution import Execution
+from mutester.mutant import Mutant
 
 
 class DataCrawler:

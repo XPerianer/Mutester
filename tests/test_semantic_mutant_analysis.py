@@ -2,8 +2,8 @@ import shutil
 
 import pytest
 
-from src.semantic_mutant_analysis import SemanticMutantAnalysis
-from src.mutant import Mutant
+from mutester.semantic_mutant_analysis import SemanticMutantAnalysis
+from mutester.mutant import Mutant
 from git import Repo
 
 import zipfile

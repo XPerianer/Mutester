@@ -1,6 +1,6 @@
 import json
 
-from src.execution import Execution
+from mutester.execution import Execution
 
 
 def test_parsing():
