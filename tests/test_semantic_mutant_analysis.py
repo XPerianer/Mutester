@@ -36,3 +36,7 @@ def test_changed_line_number(mutant_fixture):
 def test_semantic_analysis(mutant_fixture):
     semantic_analysis = SemanticMutantAnalysis(mutant_fixture)
     assert (semantic_analysis.method_name() == "yet_another_help_function")
+
+def test_parents_of_mutant_node(mutant_fixture):
+    semantic_analysis = SemanticMutantAnalysis(mutant_fixture)
+    assert (semantic_analysis.parent_names() == ['yet_another_function', 'another_function', 'A'])
