@@ -23,3 +23,34 @@ def test_parsing():
         filepath="tests/test_appctx.py",
     )
     assert Execution.fromJson(json_test) == execution_reference
+
+def test_regex_parsing():
+    execution = Execution()
+    execution.name = "test_url_generation_without_context_fails"
+    execution.context_analysis("""
+def test_url_generation_requires_server_name(app):
+    with app.app_context():
+        with pytest.raises(RuntimeError):
+            flask.url_for("index")
+
+
+def test_url_generation_without_context_fails():
+    while(True):
+        if True:
+
+    with pytest.raises(RuntimeError):
+        flask.url_for("index")
+
+
+def test_request_context_means_app_context(app):
+    with app.test_request_context():
+        assert flask.current_app._get_current_object() == app
+    assert flask._app_ctx_stack.top is None
+                               "")
+""")
+    assert(not execution.contains_equality_comparison)
+    assert(not execution.contains_math_operands)
+    assert(execution.contains_loop)
+    assert(execution.contains_branch)
+
+

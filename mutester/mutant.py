@@ -16,9 +16,10 @@ class Mutant:
     current_line: str = ""
     repo_path: str = ""
     modified_method: str = ""
-    contains_loop: bool = False
-    contains_branch: bool = False
-    contains_math_operands: bool = False
+
+    contains_loop: bool = None
+    contains_branch: bool = None
+    contains_math_operands: bool = None
 
     @classmethod
     def from_repo(cls, repo: Repo, mutant_id: int = None):
@@ -46,9 +47,10 @@ class Mutant:
 
         return mutant
 
+    # TODO: Refactor to a common static version?
     def context_analysis(self, string: str):
-        self.contains_branch = re.search("if|else|switch", string)
-        self.contains_loop = re.search("for|while", string)
-        self.contains_math_operands = re.search("[-+*/]", string)
-        self.contains_equality_comparison = re.search("==", string)
+        self.contains_branch = re.search("if|else|switch", string) != None
+        self.contains_loop = re.search("for|while", string) != None
+        self.contains_math_operands = re.search("[-+*/]", string) != None
+        self.contains_equality_comparison = re.search("==|is", string) != None
 

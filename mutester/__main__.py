@@ -66,7 +66,7 @@ def store_data_to_disk(filename: str, merge: str, datas: List[DataAnalysis]):
         print('Read in {} executions to merge from {}'.format(len(mutants_and_tests), merge))
     for data_analysis in datas:
         mutants_and_tests = mutants_and_tests.append(
-            data_analysis.mutants.set_index('mutant_id').join(data_analysis.executions.set_index('mutant_id')).reset_index(),
+            data_analysis.mutants.set_index('mutant_id').join(data_analysis.executions.set_index('mutant_id'), lsuffix='_mutant', rsuffix='_execution').reset_index(),
             ignore_index=True,
         )
 

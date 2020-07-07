@@ -19,7 +19,7 @@ class DataCrawler:
     def analyze_mutant(self, mutant_id: int) -> [Mutant, List[Execution]]:
         tests_json = self.execute_test(mutant_id)
         return_value = [Mutant.from_repo(Repo(self.repository_path), mutant_id),
-                        map(lambda test_json: Execution.fromJson(test_json, mutant_id), tests_json)
+                        map(lambda test_json: Execution.fromJson(test_json, mutant_id, self.repository_path), tests_json)
                         ]
         self.reset_folder()
         return return_value
