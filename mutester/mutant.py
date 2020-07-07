@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from git import Repo
 from unidiff import PatchSet
 
+import re
+
 from mutester.semantic_mutant_analysis import SemanticMutantAnalysis
 
 
@@ -14,6 +16,9 @@ class Mutant:
     current_line: str = ""
     repo_path: str = ""
     modified_method: str = ""
+    contains_loop: bool = False
+    contains_branch: bool = False
+    contains_math_operands: bool = False
 
     @classmethod
     def from_repo(cls, repo: Repo, mutant_id: int = None):
@@ -35,4 +40,15 @@ class Mutant:
                       previous_line=previous_line,
                       current_line=current_line, repo_path=repo.working_dir)
         mutant.modified_method = SemanticMutantAnalysis(mutant).method_name()
+
+        regex_diff = repo.git.diff(repo.head, None, '--unified=7')
+        mutant.context_analysis(regex_diff)
+
         return mutant
+
+    def context_analysis(self, string: str):
+        self.contains_branch = re.search("if|else|switch", string)
+        self.contains_loop = re.search("for|while", string)
+        self.contains_math_operands = re.search("[-+*/]", string)
+        self.contains_equality_comparison = re.search("==", string)
+
