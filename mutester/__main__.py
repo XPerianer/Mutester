@@ -44,6 +44,7 @@ mutants = pd.DataFrame(columns=Mutant.__annotations__)
 timed_run_count = 3
 timed_crawler = DataCrawler(args.repository_path, args.environment_path)
 
+# TODO: Baseline rund only if pytest-json and pytest-timeout have been installed, which happens later
 start_time = time.time()
 for _ in range(timed_run_count):
     timed_crawler.execute_test(-1)

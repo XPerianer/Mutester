@@ -64,7 +64,8 @@ class Execution:
             with open(repository_path + '/' + t.filepath, "r") as file:
                 t.context_analysis(file.read())
         except:
-            print("Failed to open the test file for regex analysis")
+            # TODO: Find out what the right expection here is
+            print("Failed to open the test file for regex analysis or analysing the test")
             pass
         return t
 
