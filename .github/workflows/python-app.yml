@@ -42,4 +42,4 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v2
         - name: Docker Container
-          uses: ./.github/actions/docker.yml #Uses action in root directory
+          uses: ./.github/actions/
