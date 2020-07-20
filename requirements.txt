@@ -4,3 +4,4 @@ pytest-json
 pytest-timeout
 intervaltree
 pandas
+gitpython
