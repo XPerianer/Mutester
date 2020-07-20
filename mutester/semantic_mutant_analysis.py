@@ -5,6 +5,7 @@ import ast
 import tokenize
 import intervaltree
 
+from Mutester.mutant import Mutant
 
 class SemanticMutantAnalysis:
 
