@@ -5,11 +5,9 @@ import ast
 import tokenize
 import intervaltree
 
-from Mutester.mutant import Mutant
-
 class SemanticMutantAnalysis:
 
-    def __init__(self, mutant: Mutant):
+    def __init__(self, mutant):
         self.changed_file_name = mutant.repo_path + '/' + mutant.modified_file_path
         self.changed_line_number = mutant.line_number_changed
         self.tree = intervaltree.IntervalTree()

@@ -40,7 +40,7 @@ class Execution:
     contains_equality_comparison: bool = None
 
     @classmethod
-    def fromJson(self, json, mutant_id, repository_path):
+    def fromJson(self, json, mutant_id= None, repository_path= None):
         t = Execution()
         t.mutant_id = mutant_id
         t.outcome = textToBool(json["outcome"])

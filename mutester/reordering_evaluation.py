@@ -7,6 +7,7 @@ class ReorderingEvaluation:
         self.ordering = ordering
         self.dataframe = dataframe
         # TODO: assert that ordering and dataframe are kind of legit
+        assert len(self.ordering) == self.dataframe.shape[0], "Dataframe has not the same length as the provided ordering"
 
     def first_failing_duration(self):
         summed_duration = 0
