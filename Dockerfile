@@ -13,4 +13,4 @@ RUN . venv/bin/activate
 RUN pip install -e . -r requirements/dev.txt
 WORKDIR /mutester
 RUN pip install -e .
-RUN pyton -m mutester /flask /flask/venv/ 1 10
+RUN python -m mutester /flask /flask/venv/ 1 10
