@@ -5,7 +5,7 @@ from mutester.execution import Execution
 
 def test_parsing():
     json_test = json.loads(
-        '{"name": "tests/test_appctx.py::test_basic_url_generation", "duration": 1, "run_index": 0, "setup": {"name": "setup", "duration": 2, "outcome": "passed"}, ' \
+        '{"name": "tests/test_appctx.py::test_basic_url_generation", "duration": 1, "run_index": 0, "setup": {"name": "setup", "duration": 2, "outcome": "passed"}, '
         '"call": {"name": "call", "duration": 3, "outcome": "passed"}, "teardown": {"name": "teardown", "duration": 4, "outcome": "passed"}, "outcome": "passed"}'
     )
     execution_reference = Execution(
@@ -23,6 +23,7 @@ def test_parsing():
         filepath="tests/test_appctx.py",
     )
     assert Execution.fromJson(json_test) == execution_reference
+
 
 def test_regex_parsing():
     execution = Execution()
@@ -48,9 +49,7 @@ def test_request_context_means_app_context(app):
     assert flask._app_ctx_stack.top is None
                                "")
 """)
-    assert(not execution.contains_equality_comparison)
-    assert(not execution.contains_math_operands)
-    assert(execution.contains_loop)
-    assert(execution.contains_branch)
-
-
+    assert (not execution.contains_equality_comparison)
+    assert (not execution.contains_math_operands)
+    assert (execution.contains_loop)
+    assert (execution.contains_branch)

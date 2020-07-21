@@ -1,13 +1,14 @@
 # The tests in here are used to not only test the reproduciblity of the results, but also show how mutester is supposed
 # to work
 
-import tempfile
 import subprocess
+import tempfile
+
 import mutester
+
 
 def test_full_flask_run():
     with tempfile.TemporaryDirectory() as temporary_directory:
-
         # Prepare everything to run the tool
         cmd_str = "cd " + temporary_directory + "&& "
         # Clone flask
@@ -19,5 +20,3 @@ def test_full_flask_run():
         subprocess.call(cmd_str, shell=True)
 
         mutester.main([temporary_directory, temporary_directory + 'venv/', 1, 10, '-j 1', '-v'])
-
-

@@ -1,19 +1,15 @@
 import argparse
+import logging
 import math
+import time
 from threading import Thread
 from typing import List
 
-import time
 import pandas as pd
-import logging
-
 from data_analysis import DataAnalysis
 from data_crawler import DataCrawler
 from execution import Execution
 from mutant import Mutant
-
-import os
-import sys
 
 argument_parser = argparse.ArgumentParser(
     description='Run mutation testing with record of failed test to pandas dataframe'
@@ -22,7 +18,8 @@ argument_parser = argparse.ArgumentParser(
 argument_parser.add_argument('repository_path',
                              help='Path to the repository to be tested')
 argument_parser.add_argument('environment_path',
-                             help='Path to the python environment to run the tests. Make sure the module is installed in -e mode, and that pytest, pytest-json, mutmut are available')
+                             help='Path to the python environment to run the tests. Make sure the module is installed'
+                                  'in -e mode, and that pytest, pytest-json, mutmut are available')
 argument_parser.add_argument('interval_start',
                              help='Test to start with')
 argument_parser.add_argument('interval_end',
@@ -49,8 +46,8 @@ start_time = time.time()
 for _ in range(timed_run_count):
     timed_crawler.execute_test(-1)
 test_baseline_time = math.ceil((time.time() - start_time) / timed_run_count)
-logging.info('Measured %i seconds of runtime\n Test with higher than 10 times the baseline will be killed', test_baseline_time)
-
+logging.info('Measured %i seconds of runtime\n Test with higher than 10 times the baseline will be killed',
+             test_baseline_time)
 
 
 def analysis_thread(mutant_ids: List[int], results: List[DataAnalysis]):
@@ -67,7 +64,8 @@ def store_data_to_disk(filename: str, merge: str, datas: List[DataAnalysis]):
         print('Read in {} executions to merge from {}'.format(len(mutants_and_tests), merge))
     for data_analysis in datas:
         mutants_and_tests = mutants_and_tests.append(
-            data_analysis.mutants.set_index('mutant_id').join(data_analysis.executions.set_index('mutant_id'), lsuffix='_mutant', rsuffix='_execution').reset_index(),
+            data_analysis.mutants.set_index('mutant_id').join(data_analysis.executions.set_index('mutant_id'),
+                                                              lsuffix='_mutant', rsuffix='_execution').reset_index(),
             ignore_index=True,
         )
 
@@ -77,7 +75,7 @@ def store_data_to_disk(filename: str, merge: str, datas: List[DataAnalysis]):
     print("Wrote: {}\n".format(pickle_name))
     total_tests = len(mutants_and_tests)
     print(mutants_and_tests)
-    total_failed_tests = len(mutants_and_tests[mutants_and_tests["outcome"] == False])
+    total_failed_tests = len(mutants_and_tests[mutants_and_tests["outcome"] is False])
     print('Total number of tests: {}\n Total failed number of tests: {}'.format(total_tests, total_failed_tests))
     return pickle_name
 
@@ -96,7 +94,8 @@ for thread_number in range(thread_count - 1):
     threads.append(Thread(target=analysis_thread, args=(mutant_ids, results)))
 
 threads.append(Thread(target=analysis_thread,
-                      args=((list(range(interval_start + (thread_count - 1) * interval_length, interval_end))), results)))
+                      args=(
+                          (list(range(interval_start + (thread_count - 1) * interval_length, interval_end))), results)))
 
 for thread in threads:
     thread.start()

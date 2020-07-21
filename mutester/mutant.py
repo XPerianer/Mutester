@@ -1,8 +1,8 @@
+import re
 from dataclasses import dataclass
+
 from git import Repo
 from unidiff import PatchSet
-
-import re
 
 from mutester.semantic_mutant_analysis import SemanticMutantAnalysis
 
@@ -23,7 +23,6 @@ class Mutant:
 
     @classmethod
     def from_repo(cls, repo: Repo, mutant_id: int = None):
-        current_diff = repo.index.diff(None)
         diff = repo.git.diff(repo.head, None, '--unified=0')
         patchset = PatchSet(diff)
 
@@ -37,9 +36,9 @@ class Mutant:
                 current_line = str(line)[2:]
 
         mutant = Mutant(mutant_id=mutant_id, modified_file_path=modified_file_path,
-                      line_number_changed=changed_sourcecode_line,
-                      previous_line=previous_line,
-                      current_line=current_line, repo_path=repo.working_dir)
+                        line_number_changed=changed_sourcecode_line,
+                        previous_line=previous_line,
+                        current_line=current_line, repo_path=repo.working_dir)
         mutant.modified_method = SemanticMutantAnalysis(mutant).method_name()
 
         regex_diff = repo.git.diff(repo.head, None, '--unified=7')
@@ -49,8 +48,7 @@ class Mutant:
 
     # TODO: Refactor to a common static version?
     def context_analysis(self, string: str):
-        self.contains_branch = re.search("if|else|switch", string) != None
-        self.contains_loop = re.search("for|while", string) != None
-        self.contains_math_operands = re.search("[-+*/]", string) != None
-        self.contains_equality_comparison = re.search("==|is", string) != None
-
+        self.contains_branch = re.search("if|else|switch", string) is not None
+        self.contains_loop = re.search("for|while", string) is not None
+        self.contains_math_operands = re.search("[-+*/]", string) is not None
+        self.contains_equality_comparison = re.search("==|is", string) is not None

@@ -1,11 +1,11 @@
 import logging
 import os
-from typing import List
-import time
-import pandas as pd
 import subprocess
-import tempfile
 import sys
+import tempfile
+from typing import List
+
+import pandas as pd
 
 from mutester.data_crawler import DataCrawler
 
@@ -35,7 +35,7 @@ class DataAnalysis:
                 logging.warning('Nonzero exit code for mutmut run')
 
             logging.info(os.listdir(temporary_directory))
-            data_crawler = DataCrawler(temporary_directory, temporary_directory + '/venv/', timeout= self.timeout)
+            data_crawler = DataCrawler(temporary_directory, temporary_directory + '/venv/', timeout=self.timeout)
 
             for mutant_id in mutant_ids:
                 try:
@@ -48,7 +48,7 @@ class DataAnalysis:
                         logging.error('Skipping mutant %i due to checkout error', mutant_id)
                 except KeyboardInterrupt:
                     return
-                except:
+                except:  # noqa: E722
                     logging.error('Thrown error for mutant %i, resetting environment', mutant_id)
                     subprocess.call('cd ' + temporary_directory + ' && git checkout .')
                     logging.error(sys.exc_info()[0])

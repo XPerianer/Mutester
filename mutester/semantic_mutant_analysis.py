@@ -3,7 +3,9 @@
 
 import ast
 import tokenize
+
 import intervaltree
+
 
 class SemanticMutantAnalysis:
 
@@ -18,7 +20,7 @@ class SemanticMutantAnalysis:
             parsed = ast.parse(f.read(), filename=self.changed_file_name)
         for node in ast.walk(parsed):
             for child in ast.iter_child_nodes(node):
-                    child.parent = node
+                child.parent = node
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 start, end = self.compute_interval(node)
                 self.tree[start:end] = node
@@ -50,7 +52,6 @@ class SemanticMutantAnalysis:
                     a = a.parent
             except AttributeError:
                 return parent_names
-
 
     def method_name(self):
         return self.query_line_number(self.changed_line_number)
