@@ -18,7 +18,7 @@ class ReorderingEvaluation:
             assert rows.shape[0] == 1, "The provided dataframe contains more than one entry for the given test_id"
 
             summed_duration += rows['duration'].iloc[0]
-            if rows['outcome'].iloc[0] is False:
+            if not rows['outcome'].iloc[0]:
                 return summed_duration
         return summed_duration
 
@@ -29,9 +29,9 @@ class ReorderingEvaluation:
             rows = self.dataframe.loc[self.dataframe['test_id'] == test_id]
             assert rows.shape[0] == 1, "The provided dataframe contains more than one entry for the given test_id"
 
-            if rows['outcome'].iloc[0] is True:
+            if rows['outcome'].iloc[0]:
                 temporary_duration += rows['duration'].iloc[0]
-            if rows['outcome'].iloc[0] is False:
+            else:
                 summed_duration += temporary_duration + rows['duration'].iloc[0]
                 temporary_duration = 0
 
@@ -46,12 +46,12 @@ class ReorderingEvaluation:
     def APFD(self):
         # We first find the positions of failing tests in the given order
         summed_positions = 0.0
-        for row in self.dataframe.loc[self.dataframe['outcome'] is False].itertuples(index=False):
+        for row in self.dataframe.loc[self.dataframe['outcome'] == False].itertuples(index=False):
             test_id = row.test_id
             index = self.ordering.index(test_id) + 1  # + 1 since this should not be 0 indexed
             summed_positions += index
 
         # This is just the formulat from the literature
-        number_of_failed_tests = self.dataframe.loc[self.dataframe['outcome'] is False].shape[0]
+        number_of_failed_tests = self.dataframe.loc[self.dataframe['outcome'] == False].shape[0]
         number_of_tests = len(self.ordering)
         return 1.0 + 1.0 / (2 * number_of_tests) - summed_positions / (number_of_tests * number_of_failed_tests)
