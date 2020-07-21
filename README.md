@@ -1,1 +1,1 @@
-# CRM2020 ![Python Checks](https://github.com/XPerianer/CRM2020/workflows/Python%20application/badge.svg)
+# CRM2020 ![Tests](https://github.com/XPerianer/CRM2020/workflows/Tests/badge.svg)
