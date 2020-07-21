@@ -10,10 +10,10 @@ import zipfile
 
 @pytest.fixture()
 def mutant_fixture():
-    with zipfile.ZipFile("data/example_repo.zip", "r") as zip_ref:
-        zip_ref.extractall("data/")
-    yield Mutant.from_repo(Repo("data/example_repo"))
-    shutil.rmtree("data/example_repo")
+    with zipfile.ZipFile("tests/data/example_repo.zip", "r") as zip_ref:
+        zip_ref.extractall("tests/data/")
+    yield Mutant.from_repo(Repo("tests/data/example_repo"))
+    shutil.rmtree("tests/data/example_repo")
 
 def test_regex_analysis(mutant_fixture):
     mutant_fixture.context_analysis("if (test + 1 == 3)")
