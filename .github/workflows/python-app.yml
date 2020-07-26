@@ -57,5 +57,7 @@ jobs:
       steps:
         - name: Checkout
           uses: actions/checkout@v2
+          with:
+            submodules: true 
         - name: Docker Container
           uses: ./.github/actions/
