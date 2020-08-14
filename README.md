@@ -9,7 +9,8 @@ For an example of how to use it, see the Dockerfile.
 It shows how to clone the popular python project flask, setup up a virtual environment that can be used to run pytest, and then calls mutester.
 
 Mutester then mutates inside the given virtual environment, and executes the test.
-In the end, a pandas dataframe created.
+In the end, a pandas dataframe is created.
+For an example of what you can do with such data, see my work for the [Code Repository Mining Seminar](/XPerianer/CRM20_How_does_software_break)
 
 Call with the '-h' option for more infos:
 ```
