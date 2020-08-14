@@ -10,7 +10,7 @@ It shows how to clone the popular python project flask, setup up a virtual envir
 
 Mutester then mutates inside the given virtual environment, and executes the test.
 In the end, a pandas dataframe is created.
-For an example of what you can do with such data, see my work for the [Code Repository Mining Seminar](XPerianer/CRM20_How_does_software_break)
+For an example of what you can do with such data, see my work for the [Code Repository Mining Seminar](https://github.com/XPerianer/CRM20_How_does_software_break)
 
 Call with the '-h' option for more infos:
 ```
