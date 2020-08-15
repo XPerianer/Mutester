@@ -11,6 +11,7 @@ WORKDIR /flask
 RUN python -m venv venv
 RUN . venv/bin/activate
 RUN pip install -e . -r requirements/dev.txt
+RUN pip install virtualenv-clone pytest-json pytest-timeout
 WORKDIR /mutester
 RUN pip install -e .
 RUN pip install /mutester/submodules/mutmut
