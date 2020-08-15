@@ -15,4 +15,4 @@ RUN pip install virtualenv-clone pytest-json pytest-timeout
 WORKDIR /mutester
 RUN pip install -e .
 RUN pip install /mutester/submodules/mutmut
-RUN python mutester /flask /flask/venv/ 1 10
+RUN python -m mutester /flask /flask/venv/ 1 10

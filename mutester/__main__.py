@@ -8,8 +8,6 @@ from typing import List
 import pandas as pd
 
 from Mutester.mutester.data_analysis import DataAnalysis
-from Mutester.mutester.execution import Execution
-from Mutester.mutester.mutant import Mutant
 from Mutester.mutester.data_crawler import DataCrawler
 
 
@@ -51,14 +49,15 @@ def main():
     argument_parser.add_argument('repository_path',
                                  help='Path to the repository to be tested')
     argument_parser.add_argument('environment_path',
-                                 help='Path to the python environment to run the tests. Make sure the module is installed'
-                                      'in -e mode, and that pytest, pytest-json, mutmut are available')
+                                 help='Path to the python environment to run the tests. Make sure the module is '
+                                      'installed in -e mode, and that pytest, pytest-json, mutmut are available')
     argument_parser.add_argument('interval_start',
                                  help='Test to start with')
     argument_parser.add_argument('interval_end',
                                  help='Test to end with (exlusive)')
     argument_parser.add_argument('-m', '--merge',
-                                 help='Add a path to the pickle file, the end result should be merged with. Helpful if the process was aborted, and you want to run some tests again.',
+                                 help='Add a path to the pickle file, the end result should be merged with.'
+                                      'Helpful if the process was aborted, and you want to run some tests again.',
                                  default='')
     argument_parser.add_argument('--filename', action='store', default='dataframe')
     argument_parser.add_argument('-v', '--verbose', action='store_true')
