@@ -6,14 +6,15 @@ from threading import Thread
 from typing import List
 
 import pandas as pd
-from data_analysis import DataAnalysis
-from data_crawler import DataCrawler
-from execution import Execution
-from mutant import Mutant
+
+from Mutester.mutester.data_analysis import DataAnalysis
+from Mutester.mutester.execution import Execution
+from Mutester.mutester.mutant import Mutant
+from Mutester.mutester.data_crawler import DataCrawler
 
 
-def analysis_thread(mutant_ids: List[int], results: List[DataAnalysis]):
-    data_analysis = DataAnalysis(args.repository_path, args.environment_path, timeout=test_baseline_time * 10)
+def analysis_thread(repository_path, environment_path, mutant_ids: List[int], results: List[DataAnalysis], timeout):
+    data_analysis = DataAnalysis(repository_path, environment_path, timeout)
     data_analysis.collect_data(mutant_ids)
     results.append(data_analysis)
     # data_analysis.store_data_to_disk(args.filename, args.merge)
@@ -89,12 +90,14 @@ def main():
     for thread_number in range(thread_count - 1):
         thread_interval_start = interval_start + thread_number * interval_length
         mutant_ids = list(range(thread_interval_start, thread_interval_start + interval_length))
-        threads.append(Thread(target=analysis_thread, args=(mutant_ids, results)))
+        threads.append(Thread(target=analysis_thread,
+                              args=(args.repository_path, args.environment_path, mutant_ids, results,
+                                    test_baseline_time * 10)))
 
     threads.append(Thread(target=analysis_thread,
-                          args=(
-                              (list(range(interval_start + (thread_count - 1) * interval_length, interval_end))),
-                              results)))
+                          args=(args.repository_path, args.environment_path,
+                                list(range(interval_start + (thread_count - 1) * interval_length, interval_end)),
+                                results, test_baseline_time * 10)))
 
     for thread in threads:
         thread.start()
