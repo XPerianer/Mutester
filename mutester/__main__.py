@@ -7,8 +7,8 @@ from typing import List
 
 import pandas as pd
 
-from Mutester.mutester.data_analysis import DataAnalysis
-from Mutester.mutester.data_crawler import DataCrawler
+from mutester.data_analysis import DataAnalysis
+from mutester.data_crawler import DataCrawler
 
 
 def analysis_thread(repository_path, environment_path, mutant_ids: List[int], results: List[DataAnalysis], timeout):
@@ -36,7 +36,7 @@ def store_data_to_disk(filename: str, merge: str, datas: List[DataAnalysis]):
     print("Wrote: {}\n".format(pickle_name))
     total_tests = len(mutants_and_tests)
     print(mutants_and_tests)
-    total_failed_tests = len(mutants_and_tests[mutants_and_tests["outcome"] is False])
+    total_failed_tests = len(mutants_and_tests[mutants_and_tests["outcome"] == False])
     print('Total number of tests: {}\n Total failed number of tests: {}'.format(total_tests, total_failed_tests))
     return pickle_name
 
