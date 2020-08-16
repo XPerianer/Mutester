@@ -1,20 +1,19 @@
 import shutil
+import zipfile
 
 import pytest
-
-from mutester.semantic_mutant_analysis import SemanticMutantAnalysis
-from mutester.mutant import Mutant
 from git import Repo
 
-import zipfile
+from mutester.mutant import Mutant
+from mutester.semantic_mutant_analysis import SemanticMutantAnalysis
+
 
 @pytest.fixture()
 def mutant_fixture():
-    with zipfile.ZipFile("data/example_repo.zip", "r") as zip_ref:
-        zip_ref.extractall("data/")
-    yield Mutant.from_repo(Repo("data/example_repo"))
-    shutil.rmtree("data/example_repo")
-
+    with zipfile.ZipFile("tests/data/example_repo.zip", "r") as zip_ref:
+        zip_ref.extractall("tests/data/")
+    yield Mutant.from_repo(Repo("tests/data/example_repo"))
+    shutil.rmtree("tests/data/example_repo")
 
 
 def test_location_to_def(mutant_fixture):
@@ -33,10 +32,12 @@ def test_changed_line_number(mutant_fixture):
     semantic_analysis = SemanticMutantAnalysis(mutant_fixture)
     assert (semantic_analysis.changed_line_number == 24)
 
+
 def test_semantic_analysis(mutant_fixture):
     semantic_analysis = SemanticMutantAnalysis(mutant_fixture)
     assert (semantic_analysis.method_name() == "yet_another_help_function")
 
+
 def test_parents_of_mutant_node(mutant_fixture):
     semantic_analysis = SemanticMutantAnalysis(mutant_fixture)
-    assert (semantic_analysis.parent_names() == ['yet_another_function', 'another_function', 'A'])
+    assert (semantic_analysis.parent_names() == ['yet_another_help_function', 'another_function', 'A'])

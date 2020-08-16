@@ -1,6 +1,6 @@
+import re
 from dataclasses import dataclass
 
-import re
 
 def textToBool(t: str):
     if t in ["failed", "skipped", "error", "xfailed"]:  # If not executed, we tread it as false
@@ -40,7 +40,7 @@ class Execution:
     contains_equality_comparison: bool = None
 
     @classmethod
-    def fromJson(self, json, mutant_id, repository_path):
+    def fromJson(self, json, mutant_id=None, repository_path=None):
         t = Execution()
         t.mutant_id = mutant_id
         t.outcome = textToBool(json["outcome"])
@@ -63,7 +63,7 @@ class Execution:
             # TODO: Should be something like os.join
             with open(repository_path + '/' + t.filepath, "r") as file:
                 t.context_analysis(file.read())
-        except:
+        except:  # noqa: E722
             # TODO: Find out what the right expection here is
             print("Failed to open the test file for regex analysis or analysing the test")
             pass
@@ -71,13 +71,12 @@ class Execution:
 
     def context_analysis(self, string: str):
         # Find position of test in file:
-        #pattern = "def " + self.name + r'\[\s\S\]*?def'
+        # pattern = "def " + self.name + r'\[\s\S\]*?def'
         pattern = 'def ' + re.escape(self.name) + r'[\s\S]*?def'
         match = re.search(pattern, string)
         if match:
             context = match.group(0)
-            self.contains_branch = re.search("if|else|switch", context) != None
-            self.contains_loop = re.search("for|while", context) != None
-            self.contains_math_operands = re.search("[-+*/]", context) != None
-            self.contains_equality_comparison = re.search("==", context) != None
-
+            self.contains_branch = re.search("if|else|switch", context) is not None
+            self.contains_loop = re.search("for|while", context) is not None
+            self.contains_math_operands = re.search("[-+*/]", context) is not None
+            self.contains_equality_comparison = re.search("==", context) is not None

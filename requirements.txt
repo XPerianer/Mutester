@@ -1,0 +1,8 @@
+numpy
+pytest
+pytest-json
+pytest-timeout
+intervaltree
+pandas
+gitpython
+unidiff
