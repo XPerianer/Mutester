@@ -39,7 +39,7 @@ class DataCrawler:
         try:
             logging.info('Executing tests for Mutant %i', mutant_id)
             cmd_str = 'cd ' + self.virtual_environment + ' && . bin/activate && cd '\
-                      + self.repository_path + ' && pytest -rN --timeout=' + str(self.timeout) +' --json=report.json > pytest_log.log'
+                      + self.repository_path + ' && pytest -p no:warnings -rN --timeout=' + str(self.timeout) +' --json=report.json > pytest_log.log'
             logging.info(cmd_str)
             subprocess.call(cmd_str, timeout=100, shell=True)
             with open(self.repository_path + '/report.json') as json_file:
