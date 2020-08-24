@@ -15,7 +15,7 @@ The mutmut submodule found under submodules/mutmut has its only license availabl
 ----------------------
 
 The file mutester/semantic_mutant_analysis.py is a modified version of the file `_line2def.py` in the repository
-[dd-trace-py](https://github.com/DataDog/dd-trace-py/), found under the folder `ddtrace/profiling` published under BSD3:
+[dd-trace-py](https://github.com/DataDog/dd-trace-py/), found under the folder `ddtrace/profiling` published under BSD3 (used under the commit-id 9ecf97f29f76cbb0ffb3c6cbfaa0e20ae1b3dca7):
 
 Copyright (c) 2016, Datadog <info@datadoghq.com>
 All rights reserved.
