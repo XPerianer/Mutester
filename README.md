@@ -32,3 +32,8 @@ optional arguments:
   -v, --verbose
   -j THREAD_COUNT, --thread_count THREAD_COUNT
   ```
+
+----------
+# Notice
+
+This project contains work from other people. You can find details about this in the LICENSE file.
