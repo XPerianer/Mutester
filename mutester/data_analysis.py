@@ -3,6 +3,8 @@ import os
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+
 from typing import List
 
 import pandas as pd
@@ -12,30 +14,33 @@ from mutester.data_crawler import DataCrawler
 
 class DataAnalysis:
     def __init__(self, base_repository_path: str, virtual_environment_path: str, timeout=0):
-        self.base_repository_path = base_repository_path
-        self.virtual_environment_path = virtual_environment_path
+        self.base_repository_path = Path(base_repository_path)
+        self.virtual_environment_path = Path(virtual_environment_path)
         self.executions = pd.DataFrame()
         self.mutants = pd.DataFrame()
         self.timeout = timeout
 
     def collect_data(self, mutant_ids: List[int]):
         with tempfile.TemporaryDirectory() as temporary_directory:
-            subprocess.call('cp ' + self.base_repository_path + '/. ' + temporary_directory + ' -r', shell=True)
+            subprocess.call('cp ' + self.base_repository_path.absolute() + ' ' + temporary_directory + ' -r',shell=True)
             subprocess.call(
-                '. ' + self.virtual_environment_path + 'bin/activate && virtualenv-clone ' + self.virtual_environment_path + ' ' + temporary_directory + '/venv/',
+                '. ' + (self.virtual_environment_path / Path('bin/activate')).absolute()  + ' && virtualenv-clone '
+                + self.virtual_environment_path.absolute() + ' ' + temporary_directory + '/venv/',
                 shell=True)
             logging.info('Temporary directory now contains:')
             logging.info(os.listdir(temporary_directory))
 
             # Prepare mutmut
             exit_call = subprocess.call(
-                'cd ' + temporary_directory + '&& . venv/bin/activate && pip install pytest pytest-timeout pytest-json && pip install -e . '
+                'cd ' + temporary_directory + '&& . '
+                + (self.virtual_environment_path / Path('bin/activate')).absolute()
+                + ' && pip install pytest pytest-timeout pytest-json && pip install -e . '
                 + ' && mutmut update-cache', shell=True)
             if exit_call != 0:
-                logging.warning('Nonzero exit code for mutmut run')
+                logging.warning('Nonzero exit code for mutmut update-cache')
 
             logging.info(os.listdir(temporary_directory))
-            data_crawler = DataCrawler(temporary_directory, temporary_directory + '/venv/', timeout=self.timeout)
+            data_crawler = DataCrawler(temporary_directory, Path(temporary_directory) / Path('venv'), timeout=self.timeout)
 
             for mutant_id in mutant_ids:
                 try:

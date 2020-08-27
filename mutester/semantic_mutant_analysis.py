@@ -1,6 +1,3 @@
-# Disclosure: The code here is heavily inspired by:
-# https://julien.danjou.info/finding-definitions-from-a-source-file-and-a-line-number-in-python/
-
 import ast
 import tokenize
 
