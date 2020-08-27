@@ -22,10 +22,10 @@ class DataAnalysis:
 
     def collect_data(self, mutant_ids: List[int]):
         with tempfile.TemporaryDirectory() as temporary_directory:
-            subprocess.call('cp ' + self.base_repository_path.absolute() + ' ' + temporary_directory + ' -r',shell=True)
+            subprocess.call('cp ' + str(self.base_repository_path.absolute()) + ' ' + temporary_directory + ' -r',shell=True)
             subprocess.call(
-                '. ' + (self.virtual_environment_path / Path('bin/activate')).absolute()  + ' && virtualenv-clone '
-                + self.virtual_environment_path.absolute() + ' ' + temporary_directory + '/venv/',
+                '. ' + str((self.virtual_environment_path / Path('bin/activate')).absolute())  + ' && virtualenv-clone '
+                + str(self.virtual_environment_path.absolute()) + ' ' + temporary_directory + '/venv/',
                 shell=True)
             logging.info('Temporary directory now contains:')
             logging.info(os.listdir(temporary_directory))
@@ -33,14 +33,14 @@ class DataAnalysis:
             # Prepare mutmut
             exit_call = subprocess.call(
                 'cd ' + temporary_directory + '&& . '
-                + (self.virtual_environment_path / Path('bin/activate')).absolute()
+                + str((self.virtual_environment_path / Path('bin/activate')).absolute())
                 + ' && pip install pytest pytest-timeout pytest-json && pip install -e . '
                 + ' && mutmut update-cache', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut update-cache')
 
             logging.info(os.listdir(temporary_directory))
-            data_crawler = DataCrawler(temporary_directory, Path(temporary_directory) / Path('venv'), timeout=self.timeout)
+            data_crawler = DataCrawler(temporary_directory, str(Path(temporary_directory) / Path('venv')), timeout=self.timeout)
 
             for mutant_id in mutant_ids:
                 try:
