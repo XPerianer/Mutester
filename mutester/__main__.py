@@ -62,15 +62,18 @@ def main():
     argument_parser.add_argument('--filename', action='store', default='dataframe')
     argument_parser.add_argument('-v', '--verbose', action='store_true')
     argument_parser.add_argument('-j', '--thread_count', action='store', default=1)
+    argument_parser.add_argument('--timed_testruns', action='store', default=2,
+                                 help='Number of dry testruns to find out after which time the testsruns should be '
+                                      'aborted')
 
     args = argument_parser.parse_args()
     if args.verbose:
         logging.basicConfig(level=logging.INFO)
 
-    timed_run_count = 3
+    timed_run_count = int(args.timed_testruns)
     timed_crawler = DataCrawler(args.repository_path, args.environment_path)
 
-    # TODO: Baseline rund only if pytest-json and pytest-timeout have been installed, which happens later
+    # TODO: Baseline runs only if pytest-json and pytest-timeout have been installed, which happens later
     start_time = time.time()
     for _ in range(timed_run_count):
         timed_crawler.execute_test(-1)

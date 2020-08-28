@@ -14,7 +14,7 @@ For an example of what you can do with such data, see my work for the [Code Repo
 
 Call with the '-h' option for more infos:
 ```
-usage: [-h] [-m MERGE] [--filename FILENAME] [-v] [-j THREAD_COUNT] repository_path environment_path interval_start interval_end
+usage: __main__.py [-h] [-m MERGE] [--filename FILENAME] [-v] [-j THREAD_COUNT] [--timed_testruns TIMED_TESTRUNS] repository_path environment_path interval_start interval_end
 
 Run mutation testing with record of failed test to pandas dataframe
 
@@ -27,10 +27,12 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -m MERGE, --merge MERGE
-                        Add a path to the pickle file, the end result should be merged with. Helpful if the process was aborted, and you want to run some tests again.
+                        Add a path to the pickle file, the end result should be merged with.Helpful if the process was aborted, and you want to run some tests again.
   --filename FILENAME
   -v, --verbose
   -j THREAD_COUNT, --thread_count THREAD_COUNT
+  --timed_testruns TIMED_TESTRUNS
+                        Number of dry testruns to find out after which time the testsruns should be aborted
   ```
 
 ----------
