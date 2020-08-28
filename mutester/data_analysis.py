@@ -3,6 +3,8 @@ import os
 import subprocess
 import sys
 import tempfile
+import shutil
+
 from pathlib import Path
 
 from typing import List
@@ -22,25 +24,28 @@ class DataAnalysis:
 
     def collect_data(self, mutant_ids: List[int]):
         with tempfile.TemporaryDirectory() as temporary_directory:
-            subprocess.call('cp ' + str(self.base_repository_path.absolute()) + ' ' + temporary_directory + ' -r',shell=True)
+            temporary_directory_path = Path(temporary_directory)
+            # Copy the repo into temporary_directory / repo
+            shutil.copytree(self.base_repository_path, temporary_directory_path / Path('repo'))
+            # Copy the virtual environment into temporary_directory / venv
             subprocess.call(
-                '. ' + str((self.virtual_environment_path / Path('bin/activate')).absolute())  + ' && virtualenv-clone '
-                + str(self.virtual_environment_path.absolute()) + ' ' + temporary_directory + '/venv/',
+                '. ' + str((self.virtual_environment_path / Path('bin/activate')).absolute()) + ' && virtualenv-clone '
+                + str(self.virtual_environment_path.absolute()) + ' ' + str(temporary_directory_path / Path('venv')),
                 shell=True)
             logging.info('Temporary directory now contains:')
             logging.info(os.listdir(temporary_directory))
 
             # Prepare mutmut
             exit_call = subprocess.call(
-                'cd ' + temporary_directory + '&& . '
-                + str((self.virtual_environment_path / Path('bin/activate')).absolute())
+                '. ' + str((Path(temporary_directory) / Path('venv/bin/activate')).absolute())
+                + ' && cd ' + str((Path(temporary_directory)) / Path('repo/'))
                 + ' && pip install pytest pytest-timeout pytest-json && pip install -e . '
                 + ' && mutmut update-cache', shell=True)
             if exit_call != 0:
                 logging.warning('Nonzero exit code for mutmut update-cache')
 
             logging.info(os.listdir(temporary_directory))
-            data_crawler = DataCrawler(temporary_directory, str(Path(temporary_directory) / Path('venv')), timeout=self.timeout)
+            data_crawler = DataCrawler(str(Path(temporary_directory) / Path('repo')), str(Path(temporary_directory) / Path('venv')), timeout=self.timeout)
 
             for mutant_id in mutant_ids:
                 try:

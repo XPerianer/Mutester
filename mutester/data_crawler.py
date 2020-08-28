@@ -2,6 +2,8 @@ import json
 import logging
 import os
 import subprocess
+from pathlib import Path
+
 from typing import List
 
 from git import Repo
@@ -27,7 +29,7 @@ class DataCrawler:
 
     def checkout_mutant(self, mutant_id: int) -> bool:
         logging.info('Switching to Mutant %i', mutant_id)
-        cmd_str = 'cd ' + self.virtual_environment + ' &&  . bin/activate && cd ' + self.repository_path + ' && mutmut apply ' + str(
+        cmd_str = 'cd ' + str(Path(self.virtual_environment)) + ' &&  . bin/activate && cd ' + self.repository_path + ' && mutmut apply ' + str(
             mutant_id)
         logging.info(cmd_str)
         return_value = subprocess.call(cmd_str, shell=True)
