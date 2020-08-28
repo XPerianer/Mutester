@@ -33,7 +33,7 @@ class DataCrawler:
             mutant_id)
         logging.info(cmd_str)
         return_value = subprocess.call(cmd_str, shell=True)
-        subprocess.call('cd ' + self.repository_path + ' && git diff', shell=True)
+        subprocess.call('cd ' + self.repository_path + ' && git --no-pager diff', shell=True)
         if return_value != 0:
             logging.error('Nonzero exit code in checkout_mutant call')
             return False
